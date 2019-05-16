@@ -2,24 +2,14 @@ package com.mongo.mongolog.config;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import com.mongodb.MongoClientURI;
+import com.mongo.mongolog.entity.MongoLogEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 @Slf4j
 @Component
@@ -33,13 +23,13 @@ public class MongoAppender extends UnsynchronizedAppenderBase<ILoggingEvent> imp
             return;
         }
 
-        LogEntity log = new LogEntity();
-        log.threadName = event.getThreadName();
-        log.level = event.getLevel().levelStr;
-        log.formattedMessage = event.getFormattedMessage();
-        log.loggerName = event.getLoggerName();
-        log.timestamp = event.getTimeStamp();
-        mongoTemplate.save(log, collectionName);
+        MongoLogEntity mongoLogEntity = new MongoLogEntity();
+        mongoLogEntity.setLevel(event.getLevel().toString());
+        mongoLogEntity.setLogger(event.getLoggerName());
+        mongoLogEntity.setThread(event.getThreadName());
+        mongoLogEntity.setMessage(event.getFormattedMessage());
+        mongoLogEntity.setDate(event.getTimeStamp());
+        mongoTemplate.save(mongoLogEntity);
     }
 
     @Override
@@ -58,14 +48,6 @@ public class MongoAppender extends UnsynchronizedAppenderBase<ILoggingEvent> imp
             mongoTemplate = applicationContext.getAutowireCapableBeanFactory().getBean(MongoTemplate.class);
             LoggerFactory.getLogger(this.getClass()).info("[ApplicationContext] Autowire MongoTemplate, MongoAppender is ready.");
         }
-    }
-
-    private class LogEntity {
-        String threadName;
-        String level;
-        String formattedMessage;
-        String loggerName;
-        Long timestamp;
     }
 
     public String getCollectionName() {

@@ -10,7 +10,7 @@
         </encoder>
     </appender>
     <appender name="MONGODB" class="com.mongo.mongolog.config.MongoAppender">
-        <collectionName>test_logs</collectionName>
+        <collectionName>MongoLogEntity</collectionName>
     </appender>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

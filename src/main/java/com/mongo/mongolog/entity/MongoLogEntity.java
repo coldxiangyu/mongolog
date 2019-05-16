@@ -2,6 +2,7 @@ package com.mongo.mongolog.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.text.SimpleDateFormat;
 
@@ -10,6 +11,7 @@ import java.text.SimpleDateFormat;
  * @date 2019/5/6 上午9:05
  */
 @Data
+@Document("MongoLogEntity")
 public class MongoLogEntity {
     @Id
     private String id;
